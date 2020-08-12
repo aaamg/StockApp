@@ -5,10 +5,6 @@ import StockCard from "./components/StockCard.js";
 import "./styles.css";
 
 export default function App() {
-  let urlVar = {
-    var1: ""
-  };
-
   const [input, setInput] = useState({
     tickerSymbol: ""
   });
@@ -23,7 +19,8 @@ export default function App() {
     industry: "",
     fiftytwoh: "",
     fiftytwol: "",
-    price: ""
+    price: "",
+    description: ""
   });
 
   const [price, setPrice] = useState({
@@ -86,6 +83,7 @@ export default function App() {
   };
 
   const url3 = `//https://www.alphavantage.co/query?function=OVERVIEW&symbol=${input.tickerSymbol}&apikey=5MRPGIK2APTZ9BFT`;
+  const url4 = `//https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${input.tickerSymbol}&apikey=5MRPGIK2APTZ9BFT`;
 
   const refresh = (e) => {
     axios.get(url3).then((res) => {
@@ -99,9 +97,28 @@ export default function App() {
         sector: res.data.Sector,
         industry: res.data.Industry,
         fiftytwoh: res.data.WeekHigh,
-        fiftytwol: res.data.WeekLow
+        fiftytwol: res.data.WeekLow,
+        description: res.data.Description
       });
     });
+    axios
+      .get(url4)
+      .then((res) => {
+        console.log(
+          "Second request: ",
+          res.data["Time Series (Daily)"]["2020-08-11"]
+        );
+        setPrice({
+          open: res.data["Time Series (Daily)"]["2020-08-11"]["1. open"],
+          high: res.data["Time Series (Daily)"]["2020-08-11"]["2. high"],
+          low: res.data["Time Series (Daily)"]["2020-08-11"]["3. low"],
+          close: res.data["Time Series (Daily)"]["2020-08-11"]["4. close"],
+          volume: res.data["Time Series (Daily)"]["2020-08-11"]["5. volume"]
+        });
+      })
+      .catch((err) => {
+        console.log("Error calling URL2: ", err);
+      });
   };
 
   useEffect(() => {
@@ -111,9 +128,6 @@ export default function App() {
   return (
     <div className="App">
       <h1>Stock Data App</h1>
-      {/* <p>Ticker Symbol: {stock.ticker}</p>
-      <p>Type: {stock.type}</p> */}
-      <StockCard ticker={stock.ticker} type={stock.type} open={price.open} />
       <form onSubmit={(e) => submit(e)}>
         <input
           placeholder="Search a stock by it's ticker"
@@ -121,28 +135,19 @@ export default function App() {
           value={input.tickerSymbol}
           onChange={(e) => setInput({ tickerSymbol: e.target.value })}
         />
-        {/* <button onSubmit={console.log(input.tickerSymbol)}>Search</button> */}
         <button onSubmit={refresh}>Search</button>
       </form>
+      <StockCard
+        exchange={stock.exchange}
+        description={stock.description}
+        ticker={stock.ticker}
+        type={stock.type}
+        open={price.open}
+        high={price.high}
+        low={price.low}
+        close={price.close}
+        volume={price.volume}
+      />
     </div>
   );
 }
-
-//https://stackoverflow.com/questions/41736213/why-cant-i-change-my-input-value-in-react-even-with-the-onchange-listener
-
-// const handleChange(event) {
-//   setInput({tickerSymbol: event.target.value});
-// }
-
-// onTodoChange(value){
-//   this.setState({
-//        name: value
-//   });
-// }
-
-// <input
-//     className="form-control"
-//     type="text" value={this.state.name}
-//     id={'todoName' + this.props.id}
-//     onChange={e => this.onTodoChange(e.target.value)}
-// />
