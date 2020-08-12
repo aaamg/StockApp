@@ -106,7 +106,7 @@ export default function App() {
 
   useEffect(() => {
     refresh();
-  });
+  }, [input]);
 
   return (
     <div className="App">
@@ -122,7 +122,7 @@ export default function App() {
           onChange={(e) => setInput({ tickerSymbol: e.target.value })}
         />
         {/* <button onSubmit={console.log(input.tickerSymbol)}>Search</button> */}
-        <button onSubmit={refresh()}>Search</button>
+        <button onSubmit={refresh}>Search</button>
       </form>
     </div>
   );
