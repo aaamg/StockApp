@@ -5,6 +5,10 @@ import StockCard from "./components/StockCard.js";
 import "./styles.css";
 
 export default function App() {
+  let urlVar = {
+    var1: ""
+  };
+
   const [input, setInput] = useState({
     tickerSymbol: ""
   });
@@ -31,8 +35,7 @@ export default function App() {
   });
 
   useEffect(() => {
-    const url1 =
-      "///https://www.alphavantage.co/query?function=OVERVIEW&symbol=IBM&apikey=5MRPGIK2APTZ9BFT";
+    const url1 = `///https://www.alphavantage.co/query?function=OVERVIEW&symbol=${input.tickerSymbol}&apikey=5MRPGIK2APTZ9BFT`;
     // axios request for company information
     axios
       .get(url1)
@@ -89,6 +92,14 @@ export default function App() {
     e.preventDefault();
   };
 
+  const url3 = `https://www.alphavantage.co/query?function=OVERVIEW&symbol=${input.tickerSymbol}&apikey=5MRPGIK2APTZ9BFT`;
+
+  const refresh = (e) => {
+    axios.get(url3).then((res) => {
+      console.log(res.data);
+    });
+  };
+
   return (
     <div className="App">
       <h1>Stock Data App</h1>
@@ -102,11 +113,8 @@ export default function App() {
           value={input.tickerSymbol}
           onChange={(e) => setInput({ tickerSymbol: e.target.value })}
         />
-        {/* <input placeholder="Search a stock by it's ticker" type="text" value={input.tickerSymbol} onChange={e => setInput({ tickerSymbol: e.target.value })} /> */}
-        <button onSubmit={console.log(input.tickerSymbol)}>Search</button>
-        {/* <button onSubmit={(e) => console.log(input.tickerSymbol)}>
-          Search
-        </button> */}
+        {/* <button onSubmit={console.log(input.tickerSymbol)}>Search</button> */}
+        <button onSubmit={refresh()}>Search</button>
       </form>
     </div>
   );
