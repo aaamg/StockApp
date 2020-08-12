@@ -5,7 +5,9 @@ import StockCard from "./components/StockCard.js";
 import "./styles.css";
 
 export default function App() {
-
+  const [input, setInput] = useState({
+    tickerSymbol: ""
+  });
 
   const [stock, setStock] = useState({
     ticker: "",
@@ -30,12 +32,12 @@ export default function App() {
 
   useEffect(() => {
     const url1 =
-      "https://www.alphavantage.co/query?function=OVERVIEW&symbol=IBM&apikey=5MRPGIK2APTZ9BFT";
+      "///https://www.alphavantage.co/query?function=OVERVIEW&symbol=IBM&apikey=5MRPGIK2APTZ9BFT";
     // axios request for company information
     axios
       .get(url1)
       .then((res) => {
-        //console.log("Response: ", res);
+        //console.log("First request: ", res);
         setStock({
           ticker: res.data.Symbol,
           type: res.data.AssetType,
@@ -51,11 +53,11 @@ export default function App() {
         //console.log(stock.ticker);
       })
       .catch((err) => {
-        console.log("Error: ", err);
+        console.log("Error calling URL1: ", err);
       });
     // axios request for stock price
     const url2 =
-      "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=5MRPGIK2APTZ9BFT";
+      "///https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&apikey=5MRPGIK2APTZ9BFT";
 
     axios
       .get(url2)
@@ -73,9 +75,19 @@ export default function App() {
         });
       })
       .catch((err) => {
-        console.log("Error URL2: ", err);
+        console.log("Error calling URL2: ", err);
       });
+
+    // const submit = (x) => {
+    //   setInput({ tickerSymbol: x });
+    // };
+
+    //submit("hi");
   }, []);
+
+  const submit = (e) => {
+    e.preventDefault();
+  };
 
   return (
     <div className="App">
@@ -83,6 +95,38 @@ export default function App() {
       {/* <p>Ticker Symbol: {stock.ticker}</p>
       <p>Type: {stock.type}</p> */}
       <StockCard ticker={stock.ticker} type={stock.type} open={price.open} />
+      <form onSubmit={(e) => submit(e)}>
+        <input
+          placeholder="Search a stock by it's ticker"
+          type="text"
+          value={input.tickerSymbol}
+          onChange={(e) => setInput({ tickerSymbol: e.target.value })}
+        />
+        {/* <input placeholder="Search a stock by it's ticker" type="text" value={input.tickerSymbol} onChange={e => setInput({ tickerSymbol: e.target.value })} /> */}
+        <button onSubmit={console.log(input.tickerSymbol)}>Search</button>
+        {/* <button onSubmit={(e) => console.log(input.tickerSymbol)}>
+          Search
+        </button> */}
+      </form>
     </div>
   );
 }
+
+//https://stackoverflow.com/questions/41736213/why-cant-i-change-my-input-value-in-react-even-with-the-onchange-listener
+
+// const handleChange(event) {
+//   setInput({tickerSymbol: event.target.value});
+// }
+
+// onTodoChange(value){
+//   this.setState({
+//        name: value
+//   });
+// }
+
+// <input
+//     className="form-control"
+//     type="text" value={this.state.name}
+//     id={'todoName' + this.props.id}
+//     onChange={e => this.onTodoChange(e.target.value)}
+// />
